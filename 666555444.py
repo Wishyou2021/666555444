@@ -1,3 +1,4 @@
+pip install randint
 from random import randint
 
 #規定範圍並產生密碼
