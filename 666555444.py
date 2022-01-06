@@ -1,32 +1,97 @@
-pip install randint
-from random import randint
+import streamlit as st
+import random as rnd
 
-#規定範圍並產生密碼
-lowest = 1
-highest = 100
-answer = randint(lowest, highest)
+st.set_page_config(
+    "Guessing Game"
+)
 
-#重複猜數字，直到猜對為止
-while True:
-    guess = input('密碼介於 ' + str(lowest) + '-' + str(highest) + ':\n>>')
-    
-    #檢查輸入的內容是否為數字
-    try:
-        guess = int(guess)  #把字串轉換成整數
-    except ValueError:  #轉換失敗便要求重新輸入數字
-        print('格式錯誤，請輸入數字\n')
-        continue
-    
-    #檢查輸入的數字是否介於規定範圍內
-    if guess <= lowest or guess >= highest:
-        print('請輸入 ' + str(lowest) + '-' + str(highest) + ' 之間的整數\n')
-        continue
-    
-    #判斷有沒有猜中密碼
-    if guess == answer:
-        print('答對了！')
-        break   #猜對才跳脫迴圈
-    elif guess < answer:
-        lowest = guess
-    else:
-        highest = guess
+if 'number' not in st.session_state:
+    st.session_state.number = None
+if 'number_from' not in st.session_state:
+    st.session_state.number_from = None
+if 'number_to' not in st.session_state:
+    st.session_state.number_to = None
+if 'number_of_guesses' not in st.session_state:
+    st.session_state.number_of_guesses = None
+if 'passed1' not in st.session_state:
+    st.session_state.passed1 = False
+if 'end' not in st.session_state:
+    st.session_state.end = False
+if 'name' not in st.session_state:
+    st.session_state.name = False
+
+
+if not st.session_state.name:
+   st.session_state.name = st.text_input("你好! 叫什麼名字?")
+
+if st.session_state.name and (not st.session_state.passed1):
+    with st.form("form1"):
+        st.session_state.number_of_guesses = st.number_input(
+            f'{st.session_state.name.capitalize()} 你覺得自己有多幸運\
+                 ? 你想猜多少呢?',
+            min_value=1,
+            max_value=10,
+            value=5
+        )
+        st.session_state.number_from = st.number_input(
+            '範圍選擇最小的數字，您希望它是多少?',
+            min_value=1,
+            max_value=100
+        )
+        st.session_state.number_to = st.number_input(
+            '範圍選擇最大的數字，您希望它是什麼\
+                 是？',
+            min_value=100,
+            max_value=100
+        )
+        submitted1 = st.form_submit_button("自我挑戰")
+
+    # need to validate user inputs
+    if submitted1:
+        if not (st.session_state.number_to > st.session_state.number_from):
+            st.error('抱歉，最大的數字必須大於\
+                    最小的!')
+        else:
+            st.session_state.passed1 = True
+            # the number generation has to be outside of guessing form,
+            # otherwise it keeps generating a new number
+            st.session_state.number = rnd.randint(
+                st.session_state.number_from, st.session_state.number_to)
+
+if st.session_state.passed1 and (not st.session_state.end):
+    f'Well, {st.session_state.name} 在數字\
+         之間 {st.session_state.number_from} and\
+              {st.session_state.number_to}.'
+
+    with st.form("form2"):
+        guess = st.number_input(
+            '',
+            min_value=1,
+            max_value=100
+        )
+        submitted2 = st.form_submit_button("自我挑戰")
+
+    if submitted2:
+        st.session_state.number_of_guesses -= 1
+        st.info(f" {st.session_state.number_of_guesses} 次機會")
+        if guess < st.session_state.number_from \
+                or guess > st.session_state.number_to:
+            st.warning("超出範圍, FOOL!")
+        elif guess < st.session_state.number:
+            st.warning("比密碼小!")
+        elif guess > st.session_state.number:
+            st.warning("比密碼大!")
+        else:
+            st.success("挑戰成功")
+            st.session_state.end = True
+
+        if st.session_state.number_of_guesses == 0:
+            st.error(f"輸了喔 數字是\
+                 {st.session_state.number}")
+            st.session_state.end = True
+
+if st.session_state.end:
+    '''
+    # 謝謝來玩 請再次光臨!
+    ## 如果想再玩一次 請按F5!
+    '''
