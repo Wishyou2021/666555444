@@ -1,7 +1,8 @@
 import streamlit as st
 import random as rnd
+
 st.set_page_config(
-    #"Guessing Game"
+    "Guessing Game"
 )
 
 if 'number' not in st.session_state:
