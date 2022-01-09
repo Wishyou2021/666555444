@@ -1,97 +1,87 @@
+#__author__="teacher"
+import random
 import streamlit as st
-import random as rnd
-
+import base64
+from PIL import Image
 st.set_page_config(
-    "Guessing Game"
-)
+ page_title='猛祺的期末報告',
+ page_icon='🙈')
+st.title('猛祺🙈的💣定時核彈🧨,炸到你心坎裡')
+confirm_input = st.button('開始製造💣/重新製造💣')
+if "start" not in st.session_state:
+ st.session_state.start = 1
+if "end" not in st.session_state:
+ st.session_state.end = 100
+if "c" not in st.session_state:
+ st.session_state.c = 0
+if "begin" not in st.session_state:
+ st.session_state.begin= 'n'
+ 
+if confirm_input:
+ st.session_state.c = c = random.randint(2,99)
+ st.session_state.start = 1
+ st.session_state.end = 100
+ st.session_state.start,st.session_state.end = 1,100
+ st.session_state.begin= 'y'
+ x=0
 
-if 'number' not in st.session_state:
-    st.session_state.number = None
-if 'number_from' not in st.session_state:
-    st.session_state.number_from = None
-if 'number_to' not in st.session_state:
-    st.session_state.number_to = None
-if 'number_of_guesses' not in st.session_state:
-    st.session_state.number_of_guesses = None
-if 'passed1' not in st.session_state:
-    st.session_state.passed1 = False
-if 'end' not in st.session_state:
-    st.session_state.end = False
-if 'name' not in st.session_state:
-    st.session_state.name = False
+st.write('c=', st.session_state.c)
 
+#x=st.sidebar.text_input("請輸入%g到%g之間的整數:"%(st.session_state.start,st.session_state.end)) 
+x=st.number_input("請輸入整數?", 0)
 
-if not st.session_state.name:
-   st.session_state.name = st.text_input("你好! 叫什麼名字?")
+if x>st.session_state.c:
+ if x>=st.session_state.end:
+    pass
+ else:
+   st.session_state.end=x
 
-if st.session_state.name and (not st.session_state.passed1):
-    with st.form("form1"):
-        st.session_state.number_of_guesses = st.number_input(
-            f'{st.session_state.name.capitalize()} 你覺得自己有多幸運\
-                 ? 你想猜多少呢?',
-            min_value=1,
-            max_value=10,
-            value=5
-        )
-        st.session_state.number_from = st.number_input(
-            '範圍選擇最小的數字，您希望它是多少?',
-            min_value=1,
-            max_value=100
-        )
-        st.session_state.number_to = st.number_input(
-            '範圍選擇最大的數字，您希望它是什麼\
-                 是？',
-            min_value=100,
-            max_value=100
-        )
-        submitted1 = st.form_submit_button("自我挑戰")
+if x<st.session_state.c:
+    if x<=st.session_state.start:
+       pass
+    else:
+       st.session_state.start=x
 
-    # need to validate user inputs
-    if submitted1:
-        if not (st.session_state.number_to > st.session_state.number_from):
-            st.error('抱歉，最大的數字必須大於\
-                    最小的!')
-        else:
-            st.session_state.passed1 = True
-            # the number generation has to be outside of guessing form,
-            # otherwise it keeps generating a new number
-            st.session_state.number = rnd.randint(
-                st.session_state.number_from, st.session_state.number_to)
+st.write("請輸入%g到%g之間的整數:"%(st.session_state.start,st.session_state.end)) 
 
-if st.session_state.passed1 and (not st.session_state.end):
-    f'Well, {st.session_state.name} 在數字\
-         之間 {st.session_state.number_from} and\
-              {st.session_state.number_to}.'
+#st.write("「CONFIRM」鍵記得按兩次喔,否則可能導致系統無法正常運行!") 
+#confirm_input2 = 
+#if st.sidebar.button('CONFIRM'):
+if x==st.session_state.c and st.session_state.begin == 'y':
+ st.subheader("核爆了吧!!!")
+ file_ = open("output_ntyylX.gif", "rb")
+ contents = file_.read()
+ data_url = base64.b64encode(contents).decode("utf-8")
+ file_.close()
+ st.markdown(
+ f'<img src="data:image/gif;base64,{data_url}" alt="output_ntyylX gif">',
+ unsafe_allow_html=True,
+ )
 
-    with st.form("form2"):
-        guess = st.number_input(
-            '',
-            min_value=1,
-            max_value=100
-        )
-        submitted2 = st.form_submit_button("自我挑戰")
-
-    if submitted2:
-        st.session_state.number_of_guesses -= 1
-        st.info(f" {st.session_state.number_of_guesses} 次機會")
-        if guess < st.session_state.number_from \
-                or guess > st.session_state.number_to:
-            st.warning("超出範圍, FOOL!")
-        elif guess < st.session_state.number:
-            st.warning("比密碼小!")
-        elif guess > st.session_state.number:
-            st.warning("比密碼大!")
-        else:
-            st.success("挑戰成功")
-            st.session_state.end = True
-
-        if st.session_state.number_of_guesses == 0:
-            st.error(f"輸了喔 數字是\
-                 {st.session_state.number}")
-            st.session_state.end = True
-
-if st.session_state.end:
-    '''
-    # 謝謝來玩 請再次光臨!
-    ## 如果想再玩一次 請按F5!
-    '''
+if x>st.session_state.c and st.session_state.begin == 'y' and x>0:
+ if x>=st.session_state.end:
+    st.write("不合法啦,好好選新的數字:")
+    file_ = open("1.gif", "rb")
+    contents = file_.read()
+    data_url = base64.b64encode(contents).decode("utf-8")
+    file_.close()
+    st.markdown(
+    f'<img src="data:image/gif;base64,{data_url}" alt="1 gif">',
+    unsafe_allow_html=True,
+    )
+ else:
+   st.session_state.end=x
+     
+if x<st.session_state.c and st.session_state.begin == 'y' and x>0:
+    if x<=st.session_state.start:
+       st.write("不合法啦,好好選新的數字:")
+       file_ = open("1.gif", "rb")
+       contents = file_.read()
+       data_url = base64.b64encode(contents).decode("utf-8")
+       file_.close()
+       st.markdown(
+       f'<img src="data:image/gif;base64,{data_url}" alt="1 gif">',
+       unsafe_allow_html=True,
+       )
+    else:
+       st.session_state.start=x
